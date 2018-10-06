@@ -20,9 +20,10 @@
 <h2>Meals</h2>
 <table>
     <tr>
-        <td>Date</td>
-        <td>Description</td>
-        <td>Calories</td>
+        <th>Date</th>
+        <th>Description</th>
+        <th>Calories</th>
+        <th colspan="2">Action</th>
     </tr>
     <c:set var="meals" value="${requestScope.get('meals')}"/>
     <c:set var="formatter" value="${requestScope.get('formatter')}"/>
@@ -31,8 +32,11 @@
             <td>${formatter.format(meal.getDateTime())}</td>
             <td>${meal.getDescription()}</td>
             <td>${meal.getCalories()}</td>
+            <td><a href="meals?action=update&userId=${meal.getId()}">Update</a></td>
+            <td><a href="meals?action=delete&userId=${meal.getId()}">Delete</a></td>
         </tr>
     </c:forEach>
 </table>
+<h3><a href="meals?action=insert${meal.getId()}">Add meal</a></h3>
 </body>
 </html>
