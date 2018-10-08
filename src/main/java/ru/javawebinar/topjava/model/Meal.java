@@ -6,18 +6,16 @@ import java.time.LocalTime;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Meal {
-    private  LocalDateTime dateTime;
-
-    private  String description;
-
-    private  int calories;
     private int id;
+    private LocalDateTime dateTime;
+    private String description;
+    private int calories;
 
-    public Meal(LocalDateTime dateTime, String description, int calories, int id) {
+    public Meal(int id, LocalDateTime dateTime, String description, int calories) {
+        this.id = id;
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
-        this.id = id;
     }
 
     public Meal() {

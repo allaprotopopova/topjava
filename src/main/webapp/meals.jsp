@@ -9,6 +9,7 @@
             border-collapse: collapse;
             width: 40%;
         }
+
         tr {
             text-align: center;
         }
