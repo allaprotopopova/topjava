@@ -7,14 +7,15 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class InMemoryMealRepositoryImpl implements MealRepository {
     private AtomicInteger idGenerator = new AtomicInteger(0);
-    private ConcurrentHashMap<Integer, Meal> meals = initialiseMeal();
+    private Map<Integer, Meal> meals = initialiseMeal();
 
-    private ConcurrentHashMap<Integer, Meal> initialiseMeal() {
+    private Map<Integer, Meal> initialiseMeal() {
         List<Meal> mealList = Arrays.asList(
                 new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500),
                 new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000),
@@ -51,7 +52,8 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     @Override
     public Meal add(Meal newMeal) {
         newMeal.setId(idGenerator.incrementAndGet());
-        return meals.putIfAbsent(newMeal.getId(), newMeal);
+        meals.put(newMeal.getId(), newMeal);
+        return newMeal;
     }
 
     @Override

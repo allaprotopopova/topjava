@@ -32,12 +32,12 @@ public class MealServlet extends HttpServlet {
         }
         switch (action) {
             case "delete":
-                int userId = Integer.parseInt(request.getParameter("userId"));
-                dao.delete(userId);
+                int mealId = Integer.parseInt(request.getParameter("mealId"));
+                dao.delete(mealId);
                 response.sendRedirect("meals");
                 break;
             case "update":
-                Integer id = Integer.valueOf(request.getParameter("userId"));
+                Integer id = Integer.valueOf(request.getParameter("mealId"));
                 Meal meal = dao.getById(id);
                 request.setAttribute("meal", meal);
             case "insert":
