@@ -38,6 +38,6 @@
         </tr>
     </c:forEach>
 </table>
-<h3><a href="meals?action=insert${meal.getId()}">Add meal</a></h3>
+<h3><a href="meals?action=insert">Add meal</a></h3>
 </body>
 </html>
