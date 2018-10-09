@@ -13,25 +13,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class InMemoryMealRepositoryImpl implements MealRepository {
     private AtomicInteger idGenerator = new AtomicInteger(0);
-    private Map<Integer, Meal> meals = initialiseMeal();
-
-    private Map<Integer, Meal> initialiseMeal() {
-        List<Meal> mealList = Arrays.asList(
-                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500),
-                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000),
-                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин", 500),
-                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак", 1000),
-                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед", 500),
-                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510)
-        );
-        ConcurrentHashMap<Integer, Meal> result = new ConcurrentHashMap<>();
-        mealList.forEach(meal -> result.putIfAbsent(meal.getId(), meal));
-        return result;
-    }
+    private Map<Integer, Meal> meals;
 
     public InMemoryMealRepositoryImpl() {
         super();
-        initialiseMeal();
+        meals = initialiseMeal();
     }
 
     @Override
@@ -45,8 +31,8 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     }
 
     @Override
-    public Meal delete(int id) {
-        return meals.remove(id);
+    public boolean delete(int id) {
+        return meals.remove(id, getById(id));
     }
 
     @Override
@@ -59,5 +45,19 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     @Override
     public Meal getById(int id) {
         return meals.get(id);
+    }
+
+    private Map<Integer, Meal> initialiseMeal() {
+        List<Meal> mealList = Arrays.asList(
+                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500),
+                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000),
+                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин", 500),
+                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак", 1000),
+                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед", 500),
+                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510)
+        );
+        ConcurrentHashMap<Integer, Meal> result = new ConcurrentHashMap<>();
+        mealList.forEach(meal -> result.putIfAbsent(meal.getId(), meal));
+        return result;
     }
 }

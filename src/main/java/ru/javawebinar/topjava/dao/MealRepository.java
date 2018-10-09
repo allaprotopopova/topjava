@@ -10,7 +10,7 @@ public interface MealRepository {
 
     Meal update(Meal id);
 
-    Meal delete(int id);
+    boolean delete(int id);
 
     Meal add(Meal newMeal);
 

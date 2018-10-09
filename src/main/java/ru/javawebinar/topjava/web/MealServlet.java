@@ -21,7 +21,14 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class MealServlet extends HttpServlet {
     @SuppressWarnings("unused")
     private static final Logger log = getLogger(MealServlet.class);
-    private final MealRepository dao = new InMemoryMealRepositoryImpl();
+    private MealRepository dao;
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        dao = new InMemoryMealRepositoryImpl();
+
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
