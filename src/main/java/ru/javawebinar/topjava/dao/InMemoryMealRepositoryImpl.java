@@ -13,11 +13,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class InMemoryMealRepositoryImpl implements MealRepository {
     private AtomicInteger idGenerator = new AtomicInteger(0);
-    private Map<Integer, Meal> meals;
+    private Map<Integer, Meal> meals = new ConcurrentHashMap<>();
 
     public InMemoryMealRepositoryImpl() {
-        super();
-        meals = initialiseMeal();
+        initialiseMeal();
     }
 
     @Override
@@ -32,7 +31,8 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
 
     @Override
     public boolean delete(int id) {
-        return meals.remove(id, getById(id));
+        Meal meal = meals.remove(id);
+        return meal != null;
     }
 
     @Override
@@ -47,17 +47,12 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
         return meals.get(id);
     }
 
-    private Map<Integer, Meal> initialiseMeal() {
-        List<Meal> mealList = Arrays.asList(
-                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500),
-                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000),
-                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин", 500),
-                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак", 1000),
-                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед", 500),
-                new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510)
-        );
-        ConcurrentHashMap<Integer, Meal> result = new ConcurrentHashMap<>();
-        mealList.forEach(meal -> result.putIfAbsent(meal.getId(), meal));
-        return result;
+    private void initialiseMeal() {
+        add(new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500));
+        add(new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000));
+        add(new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин", 500));
+        add(new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак", 1000));
+        add(new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед", 500));
+        add(new Meal(idGenerator.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510));
     }
 }

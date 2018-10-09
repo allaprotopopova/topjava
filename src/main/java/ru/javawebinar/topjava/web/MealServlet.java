@@ -24,10 +24,8 @@ public class MealServlet extends HttpServlet {
     private MealRepository dao;
 
     @Override
-    public void init() throws ServletException {
-        super.init();
+    public void init() {
         dao = new InMemoryMealRepositoryImpl();
-
     }
 
     @Override
