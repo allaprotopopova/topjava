@@ -5,7 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.model.to.MealWithExceed;
+import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -15,63 +16,94 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
 
-    private MealService service;
+    private MealRestController controller;
+    private ConfigurableApplicationContext appCtx;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
+
         super.init(config);
-        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
-            service = appCtx.getBean(MealService.class);
+        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        controller = appCtx.getBean(MealRestController.class);
+
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        if (appCtx != null) {
+            appCtx.close();
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         request.setCharacterEncoding("UTF-8");
-        String id = request.getParameter("id");
+        String filter = request.getParameter("filter");
+        if ("filter".equals(filter)) {
+            String dateF = request.getParameter("dateFrom");
+            String dateT = request.getParameter("dateTill");
+            String timeF = request.getParameter("timeFrom");
+            String timeT = request.getParameter("timeTill");
 
-        Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
-                SecurityUtil.authUserId(), LocalDateTime.parse(request.getParameter("dateTime")),
-                request.getParameter("description"),
-                Integer.parseInt(request.getParameter("calories")));
 
-        log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        service.save(meal);
-        response.sendRedirect("meals");
+            List<MealWithExceed> filtered = controller.filter(dateF, dateT, timeF, timeT);
+            redirectToMeals(filtered, request, response);
+
+
+        } else if ("user".equals(filter)) {
+            int userId = Integer.parseInt(request.getParameter("selectedUser"));
+            SecurityUtil.setAuthUserId(userId);
+            response.sendRedirect("index.html");
+        } else {
+            String id = request.getParameter("id");
+
+            Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
+                    SecurityUtil.authUserId(), LocalDateTime.parse(request.getParameter("dateTime")),
+                    request.getParameter("description"),
+                    Integer.parseInt(request.getParameter("calories")));
+            controller.save(meal, meal.getId());
+            response.sendRedirect("meals");
+        }
+
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-
         switch (action == null ? "all" : action) {
             case "delete":
                 int id = getId(request);
                 log.info("Delete {}", id);
-                service.delete(id, SecurityUtil.authUserId());
+                controller.delete(id);
                 response.sendRedirect("meals");
                 break;
             case "create":
             case "update":
                 final Meal meal = "create".equals(action) ?
                         new Meal(SecurityUtil.authUserId(), LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
-                        service.get(getId(request), SecurityUtil.authUserId());
+                        controller.get(getId(request));
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
                 break;
             case "all":
             default:
                 log.info("getAll");
-                request.setAttribute("meals",
-                        service.getAll(SecurityUtil.authUserId()));
-                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                redirectToMeals(controller.getAll(), request, response);
                 break;
         }
+    }
+
+    private void redirectToMeals(List<MealWithExceed> mealsList, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setAttribute("meals", mealsList
+        );
+        request.getRequestDispatcher("/meals.jsp").forward(request, response);
     }
 
     private int getId(HttpServletRequest request) {

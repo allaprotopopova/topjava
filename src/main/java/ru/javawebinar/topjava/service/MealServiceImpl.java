@@ -5,10 +5,13 @@ import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.to.MealWithExceed;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
@@ -41,5 +44,10 @@ public class MealServiceImpl implements MealService {
     @Override
     public List<MealWithExceed> getAll(int userId) {
         return MealsUtil.getWithExceeded(repository.getAll(userId), SecurityUtil.authUserCaloriesPerDay());
+    }
+
+    @Override
+    public List<MealWithExceed> getFiltered(LocalDate dateFrom, LocalDate dateTill, LocalTime timeFrom, LocalTime timeTill, int userId) {
+        return MealsUtil.getWithExceeded(repository.getFiltered(userId, meal -> DateTimeUtil.isBetween(meal.getDate(), dateFrom, dateTill) && DateTimeUtil.isBetween(meal.getTime(), timeFrom, timeTill)), SecurityUtil.authUserCaloriesPerDay());
     }
 }

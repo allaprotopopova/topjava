@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Repository
@@ -45,11 +46,14 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
-        List<Meal> meals = repository.values().stream().filter(meal -> meal.getUserId() == userId).sorted((m1, m2) -> {
+        return getFiltered(userId, meal -> true);
+    }
+
+    @Override
+    public List<Meal> getFiltered(int userId, Predicate<Meal> filter) {
+        return repository.values().stream().filter(meal -> meal.getUserId() == userId).filter(filter).sorted((m1, m2) -> {
             return m2.getDate().compareTo(m1.getDate()) != 0 ? m2.getDate().compareTo(m1.getDate()) : m2.getTime().compareTo(m1.getTime());
         }).collect(Collectors.toList());
-        return meals;
-
     }
 }
 
