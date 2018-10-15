@@ -27,8 +27,8 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public Meal save(Meal meal) {
-        return repository.save(meal);
+    public Meal save(int userId, Meal meal) {
+        return repository.save(userId, meal);
     }
 
     @Override
@@ -48,6 +48,6 @@ public class MealServiceImpl implements MealService {
 
     @Override
     public List<MealWithExceed> getFiltered(LocalDate dateFrom, LocalDate dateTill, LocalTime timeFrom, LocalTime timeTill, int userId) {
-        return MealsUtil.getWithExceeded(repository.getFiltered(userId, meal -> DateTimeUtil.isBetween(meal.getDate(), dateFrom, dateTill) && DateTimeUtil.isBetween(meal.getTime(), timeFrom, timeTill)), SecurityUtil.authUserCaloriesPerDay());
+        return MealsUtil.getFilteredWithExceeded(repository.getFiltered(userId, dateFrom, dateTill), SecurityUtil.authUserCaloriesPerDay(), meal -> DateTimeUtil.isBetween(meal.getTime(), timeFrom, timeTill));
     }
 }

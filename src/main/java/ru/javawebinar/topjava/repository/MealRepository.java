@@ -2,11 +2,11 @@ package ru.javawebinar.topjava.repository;
 
 import ru.javawebinar.topjava.model.Meal;
 
+import java.time.LocalDate;
 import java.util.List;
-import java.util.function.Predicate;
 
 public interface MealRepository {
-    Meal save(Meal meal);
+    Meal save(int userId, Meal meal);
 
     boolean delete(int id, int userId);
 
@@ -14,5 +14,5 @@ public interface MealRepository {
 
     List<Meal> getAll(int userId);
 
-    List<Meal> getFiltered(int userId, Predicate<Meal> filter);
+    List<Meal> getFiltered(int userId, LocalDate dateFrom, LocalDate dateTill);
 }

@@ -13,8 +13,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
-
 @Controller
 public class MealRestController {
 
@@ -25,29 +23,24 @@ public class MealRestController {
         this.service = service;
     }
 
-    public Meal save(Meal meal, int id) {
+    public Meal save(Meal meal, Integer id) {
         ValidationUtil.assureIdConsistent(meal, id);
-        return service.save(meal);
+        return service.save(SecurityUtil.authUserId(), meal);
     }
 
-    public void delete(int id) throws NotFoundException {
+    public void delete(Integer id) throws NotFoundException {
         service.delete(id, SecurityUtil.authUserId());
     }
 
-    public Meal get(int id) throws NotFoundException {
-        return checkNotFoundWithId(service.get(id, SecurityUtil.authUserId()), id);
+    public Meal get(Integer id) throws NotFoundException {
+        return service.get(id, SecurityUtil.authUserId());
     }
 
     public List<MealWithExceed> getAll() {
         return service.getAll(SecurityUtil.authUserId());
     }
 
-    public List<MealWithExceed> filter(String dateF, String dateT, String timeF, String timeT) {
-
-        LocalDate dateFrom = dateF.isEmpty() ? LocalDate.MIN : LocalDate.parse(dateF);
-        LocalDate dateTill = dateT.isEmpty() ? LocalDate.MAX : LocalDate.parse(dateT);
-        LocalTime timeFrom = timeF.isEmpty() ? LocalTime.MIN : LocalTime.parse(timeF);
-        LocalTime timeTill = timeT.isEmpty() ? LocalTime.MAX : LocalTime.parse(timeT);
+    public List<MealWithExceed> getBetween(LocalDate dateFrom, LocalDate dateTill, LocalTime timeFrom, LocalTime timeTill) {
 
         return service.getFiltered(dateFrom, dateTill, timeFrom, timeTill, SecurityUtil.authUserId());
     }

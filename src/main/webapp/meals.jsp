@@ -43,15 +43,15 @@
         <input type="hidden" name="filter" value="filter">
         <dl>
             <dt>DateFrom:</dt>
-            <dd><input type="date" value="${meal.dateTime}" name="dateFrom"></dd>
+            <dd><input type="date" value="" name="dateFrom"></dd>
             <dt> DateTill:</dt>
-            <dd><input type="date" value="${meal.dateTime}" name="dateTill"></dd>
+            <dd><input type="date" value="" name="dateTill"></dd>
         </dl>
         <dl>
             <dt>TimeFrom:</dt>
-            <dd><input type="time" value="${meal.dateTime}" name="timeFrom"></dd>
+            <dd><input type="time" value="" name="timeFrom"></dd>
             <dt> TimeTill:</dt>
-            <dd><input type="time" value="${meal.dateTime}" name="timeTill"></dd>
+            <dd><input type="time" value="" name="timeTill"></dd>
         </dl>
         <button type="submit">Filter</button>
     </form>

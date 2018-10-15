@@ -14,7 +14,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
@@ -52,15 +54,13 @@ public class MealServlet extends HttpServlet {
             String timeF = request.getParameter("timeFrom");
             String timeT = request.getParameter("timeTill");
 
+            LocalDate dateFrom = dateF.isEmpty() ? LocalDate.MIN : LocalDate.parse(dateF);
+            LocalDate dateTill = dateT.isEmpty() ? LocalDate.MAX : LocalDate.parse(dateT);
+            LocalTime timeFrom = timeF.isEmpty() ? LocalTime.MIN : LocalTime.parse(timeF);
+            LocalTime timeTill = timeT.isEmpty() ? LocalTime.MAX : LocalTime.parse(timeT);
 
-            List<MealWithExceed> filtered = controller.filter(dateF, dateT, timeF, timeT);
-            redirectToMeals(filtered, request, response);
-
-
-        } else if ("user".equals(filter)) {
-            int userId = Integer.parseInt(request.getParameter("selectedUser"));
-            SecurityUtil.setAuthUserId(userId);
-            response.sendRedirect("index.html");
+            List<MealWithExceed> filtered = controller.getBetween(dateFrom, dateTill, timeFrom, timeTill);
+            forwardToMeals(filtered, request, response);
         } else {
             String id = request.getParameter("id");
 
@@ -95,12 +95,12 @@ public class MealServlet extends HttpServlet {
             case "all":
             default:
                 log.info("getAll");
-                redirectToMeals(controller.getAll(), request, response);
+                forwardToMeals(controller.getAll(), request, response);
                 break;
         }
     }
 
-    private void redirectToMeals(List<MealWithExceed> mealsList, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void forwardToMeals(List<MealWithExceed> mealsList, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("meals", mealsList
         );
         request.getRequestDispatcher("/meals.jsp").forward(request, response);
