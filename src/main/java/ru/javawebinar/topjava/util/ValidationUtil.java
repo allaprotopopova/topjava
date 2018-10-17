@@ -35,7 +35,7 @@ public class ValidationUtil {
 //      http://stackoverflow.com/a/32728226/548473
         if (entity.isNew()) {
             entity.setId(id);
-        } else if (entity.getId().equals(id)) {
+        } else if (!entity.getId().equals(id)) {
             throw new IllegalArgumentException(entity + " must be with id=" + id);
         }
     }

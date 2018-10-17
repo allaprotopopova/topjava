@@ -54,10 +54,10 @@ public class MealServlet extends HttpServlet {
             String timeF = request.getParameter("timeFrom");
             String timeT = request.getParameter("timeTill");
 
-            LocalDate dateFrom = dateF.isEmpty() ? LocalDate.MIN : LocalDate.parse(dateF);
-            LocalDate dateTill = dateT.isEmpty() ? LocalDate.MAX : LocalDate.parse(dateT);
-            LocalTime timeFrom = timeF.isEmpty() ? LocalTime.MIN : LocalTime.parse(timeF);
-            LocalTime timeTill = timeT.isEmpty() ? LocalTime.MAX : LocalTime.parse(timeT);
+            LocalDate dateFrom = dateF.isEmpty() ? null : LocalDate.parse(dateF);
+            LocalDate dateTill = dateT.isEmpty() ? null : LocalDate.parse(dateT);
+            LocalTime timeFrom = timeF.isEmpty() ? null : LocalTime.parse(timeF);
+            LocalTime timeTill = timeT.isEmpty() ? null : LocalTime.parse(timeT);
 
             List<MealWithExceed> filtered = controller.getBetween(dateFrom, dateTill, timeFrom, timeTill);
             forwardToMeals(filtered, request, response);
@@ -65,10 +65,14 @@ public class MealServlet extends HttpServlet {
             String id = request.getParameter("id");
 
             Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
-                    SecurityUtil.authUserId(), LocalDateTime.parse(request.getParameter("dateTime")),
+                    LocalDateTime.parse(request.getParameter("dateTime")),
                     request.getParameter("description"),
                     Integer.parseInt(request.getParameter("calories")));
-            controller.save(meal, meal.getId());
+            if (meal.isNew()) {
+                controller.create(meal);
+            } else {
+                controller.update(meal, meal.getId());
+            }
             response.sendRedirect("meals");
         }
 
@@ -87,7 +91,7 @@ public class MealServlet extends HttpServlet {
             case "create":
             case "update":
                 final Meal meal = "create".equals(action) ?
-                        new Meal(SecurityUtil.authUserId(), LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
+                        new Meal(null, LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
                         controller.get(getId(request));
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);

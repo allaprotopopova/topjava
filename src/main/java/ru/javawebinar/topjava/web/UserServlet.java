@@ -22,12 +22,9 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.setCharacterEncoding("UTF-8");
-        String filter = req.getParameter("filter");
+        int userId = Integer.parseInt(req.getParameter("selectedUser"));
+        SecurityUtil.setAuthUserId(userId);
+        resp.sendRedirect("index.html");
 
-        if ("user".equals(filter)) {
-            int userId = Integer.parseInt(req.getParameter("selectedUser"));
-            SecurityUtil.setAuthUserId(userId);
-            resp.sendRedirect("index.html");
-        }
     }
 }

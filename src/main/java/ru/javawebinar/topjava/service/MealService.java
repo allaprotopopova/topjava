@@ -10,7 +10,9 @@ import java.util.List;
 
 public interface MealService {
 
-    Meal save(int userId, Meal meal);
+    Meal update(int userId, Meal meal);
+
+    Meal create(int userId, Meal meal);
 
     void delete(int id, int userId) throws NotFoundException;
 
