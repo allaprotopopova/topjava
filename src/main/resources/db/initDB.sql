@@ -29,14 +29,12 @@ CREATE TABLE user_roles
 
 CREATE TABLE meals
 (
-  id          INTEGER DEFAULT nextval('global_seq' :: regclass) NOT NULL
-    CONSTRAINT meals_idx
+  id          INTEGER DEFAULT nextval('global_seq') NOT NULL
     PRIMARY KEY,
   datetime    TIMESTAMP                                         NOT NULL,
   description VARCHAR                                           NOT NULL,
   calories    INTEGER                                           NOT NULL,
   user_id     INTEGER                                           NOT NULL
-    CONSTRAINT meals_user_id_fkey
     REFERENCES users
     ON DELETE CASCADE
 );

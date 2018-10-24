@@ -15,7 +15,6 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,8 +39,8 @@ public class MealServiceTest {
 
     @Test
     public void get() {
-        Meal meal = service.get(MEAL_100002.getId(), USER_ID);
-        assertMatch(meal, MEAL_100002);
+        Meal meal = service.get(MEAL_USER_100002.getId(), USER_ID);
+        assertMatch(meal, MEAL_USER_100002);
     }
 
     @Test(expected = NotFoundException.class)
@@ -51,30 +50,30 @@ public class MealServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void getMealNotBelongToUser() {
-        service.get(MEAL_100002.getId(), ADMIN_ID);
+        service.get(MEAL_USER_100002.getId(), ADMIN_ID);
     }
 
     @Test
     public void delete() {
-        service.delete(MEAL_100002.getId(), USER_ID);
+        service.delete(MEAL_USER_100002.getId(), USER_ID);
         List<Meal> meals = service.getAll(USER_ID);
-        assertMatch(meals, MEAL_100003, MEAL_100004);
+        assertMatch(meals, MEAL_USER_100004, MEAL_USER_100003 );
     }
 
     @Test(expected = NotFoundException.class)
     public void deleteMealNotExist() {
-        service.delete(MEAL_100002.getId() + 10, USER_ID);
+        service.delete(MEAL_USER_100002.getId() + 10, USER_ID);
     }
 
     @Test(expected = NotFoundException.class)
     public void deleteMealNotBelongToUser() {
-        service.delete(MEAL_100002.getId(), ADMIN_ID);
+        service.delete(MEAL_USER_100002.getId(), ADMIN_ID);
     }
 
     @Test
     public void getBetweenDates() {
         List<Meal> meals = service.getBetweenDates(LocalDate.of(2015, Month.MAY, 29), LocalDate.of(2015, Month.MAY, 30), USER_ID);
-        assertMatch(meals, MEAL_100002, MEAL_100003);
+        assertMatch(meals, MEAL_USER_100003, MEAL_USER_100002);
     }
 
     @Test
@@ -86,7 +85,7 @@ public class MealServiceTest {
     @Test
     public void getBetweenDateTimes() {
         List<Meal> meals = service.getBetweenDateTimes(LocalDateTime.of(2015, Month.MAY, 29, 10, 0), LocalDateTime.of(2015, Month.MAY, 29, 11, 0), USER_ID);
-        assertMatch(meals, MEAL_100002);
+        assertMatch(meals, MEAL_USER_100002);
     }
 
     @Test
@@ -98,7 +97,7 @@ public class MealServiceTest {
     @Test
     public void getAll() {
         List<Meal> meals = service.getAll(USER_ID);
-        assertMatch(meals, MEAL_100002, MEAL_100003, MEAL_100004);
+        assertMatch(meals, MEAL_USER_100004, MEAL_USER_100003, MEAL_USER_100002);
 
     }
 
@@ -110,12 +109,12 @@ public class MealServiceTest {
 
     @Test
     public void update() {
-        Meal updated = new Meal(MEAL_100002);
+        Meal updated = new Meal(MEAL_USER_100002);
         updated.setDateTime(LocalDateTime.of(2018, Month.MAY, 29, 11, 0));
         updated.setCalories(2345);
         updated.setDescription("updated");
         service.update(updated, USER_ID);
-        assertMatch(updated, service.get(MEAL_100002.getId(), USER_ID));
+        assertMatch(updated, service.get(MEAL_USER_100002.getId(), USER_ID));
     }
 
     @Test(expected = NotFoundException.class)
@@ -126,7 +125,7 @@ public class MealServiceTest {
 
     @Test(expected = NotFoundException.class)
     public void updateMealNotBelogToUser() {
-        Meal updated = new Meal(MEAL_100002);
+        Meal updated = new Meal(MEAL_USER_100002);
         updated.setDateTime(LocalDateTime.of(2018, Month.MAY, 29, 11, 0));
         updated.setCalories(2345);
         updated.setDescription("updated");
@@ -139,6 +138,7 @@ public class MealServiceTest {
         Meal created = service.create(newMeal, USER_ID);
         newMeal.setId(created.getId());
         List<Meal> meals = service.getAll(USER_ID);
-        assertMatch(meals, MEAL_100002, MEAL_100003, MEAL_100004, newMeal);
+        assertMatch(service.get(created.getId(), USER_ID), created);
+        assertMatch(meals, newMeal, MEAL_USER_100004, MEAL_USER_100003, MEAL_USER_100002);
     }
 }
