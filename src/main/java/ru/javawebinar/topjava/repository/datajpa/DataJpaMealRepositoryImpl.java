@@ -13,15 +13,19 @@ import java.util.List;
 @Repository
 public class DataJpaMealRepositoryImpl implements MealRepository {
 
-    @Autowired
-    private CrudMealRepository crudRepository;
+    private final CrudMealRepository crudRepository;
+
+    private final EntityManager em;
 
     @Autowired
-    private EntityManager em;
+    public DataJpaMealRepositoryImpl(CrudMealRepository crudRepository, EntityManager em) {
+        this.crudRepository = crudRepository;
+        this.em = em;
+    }
 
     @Override
     public Meal save(Meal meal, int userId) {
-        if (!meal.isNew()&& get(meal.getId(), userId)==null) {
+        if (!meal.isNew() && get(meal.getId(), userId) == null) {
             return null;
         }
         meal.setUser(em.getReference(User.class, userId));
@@ -30,13 +34,13 @@ public class DataJpaMealRepositoryImpl implements MealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
-        return crudRepository.delete(id, userId)!=0;
+        return crudRepository.delete(id, userId) != 0;
     }
 
     @Override
     public Meal get(int id, int userId) {
         Meal meal = crudRepository.findById(id).orElse(null);
-        return meal!=null && meal.getUser().getId()==userId? meal : null;
+        return meal != null && meal.getUser().getId() == userId ? meal : null;
     }
 
     @Override
