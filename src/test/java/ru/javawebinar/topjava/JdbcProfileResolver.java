@@ -2,14 +2,12 @@ package ru.javawebinar.topjava;
 
 import org.springframework.test.context.ActiveProfilesResolver;
 
-import java.util.Properties;
-
 //http://stackoverflow.com/questions/23871255/spring-profiles-simple-example-of-activeprofilesresolver
-public class ActiveDbProfileResolver implements ActiveProfilesResolver {
+public class JdbcProfileResolver implements ActiveProfilesResolver {
 
     @Override
     public String[] resolve(Class<?> aClass) {
 
-        return new String[]{Profiles.getActiveDbProfile()};
+        return new String[]{Profiles.getActiveDbProfile(), Profiles.JDBC};
     }
 }
