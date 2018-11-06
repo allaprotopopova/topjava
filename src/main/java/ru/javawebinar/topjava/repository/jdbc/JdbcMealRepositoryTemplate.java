@@ -41,7 +41,7 @@ abstract class JdbcMealRepositoryTemplate implements MealRepository {
                 .addValue("id", meal.getId())
                 .addValue("description", meal.getDescription())
                 .addValue("calories", meal.getCalories())
-                .addValue("date_time", convertDateTime(meal.getDateTime()).get(0))
+                .addValue("date_time", convertDateTime(meal.getDateTime()))
                 .addValue("user_id", userId);
 
         if (meal.isNew()) {
@@ -81,10 +81,10 @@ abstract class JdbcMealRepositoryTemplate implements MealRepository {
     public List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
         return jdbcTemplate.query(
                 "SELECT * FROM meals WHERE user_id=?  AND date_time BETWEEN  ? AND ? ORDER BY date_time DESC",
-                ROW_MAPPER, userId, convertDateTime(startDate).get(0), convertDateTime(endDate).get(0));
+                ROW_MAPPER, userId, convertDateTime(startDate), convertDateTime(endDate));
     }
 
-    abstract List<?> convertDateTime(LocalDateTime dateTime);
+    abstract <T> T convertDateTime(LocalDateTime dateTime);
 
 
 }

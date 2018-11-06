@@ -1,8 +1,6 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.AfterClass;
-import org.junit.Ignore;
-import org.junit.Rule;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.Stopwatch;
 import org.junit.runner.Description;
@@ -46,6 +44,11 @@ public class ServiceTest {
 
     static {
         SLF4JBridgeHandler.install();
+    }
+
+    @BeforeClass
+    public static void clearResults() {
+        results = new StringBuilder();
     }
 
     @AfterClass

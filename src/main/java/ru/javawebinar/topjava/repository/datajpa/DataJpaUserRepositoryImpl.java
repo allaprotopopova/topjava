@@ -45,6 +45,6 @@ public class DataJpaUserRepositoryImpl implements UserRepository {
     }
 
     public User getWithMeals(int user_id) {
-        return crudRepository.getWithMeals(user_id).get(0);
+        return crudRepository.getWithMeals(user_id);
     }
 }

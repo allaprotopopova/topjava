@@ -18,9 +18,10 @@ public class JdbcMealReposytoryHsqlImpl extends JdbcMealRepositoryTemplate {
     }
 
     @Override
-    List<?> convertDateTime(LocalDateTime dateTime) {
-        return List.of(Timestamp.valueOf(dateTime));
+    <T> T convertDateTime(LocalDateTime dateTime) {
+        return (T) Timestamp.valueOf(dateTime);
     }
+
 
 
 }

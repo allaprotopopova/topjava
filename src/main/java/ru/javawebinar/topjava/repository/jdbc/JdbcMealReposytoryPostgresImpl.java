@@ -17,8 +17,8 @@ public class JdbcMealReposytoryPostgresImpl extends JdbcMealRepositoryTemplate {
     }
 
     @Override
-    List<?> convertDateTime(LocalDateTime dateTime) {
-        return List.of(dateTime);
+    <T> T convertDateTime(LocalDateTime dateTime) {
+        return (T) dateTime;
     }
 
 

@@ -56,7 +56,6 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    @CacheEvict(value = "users", allEntries = true)
     public Meal getWithUser(int id, int userId) {
         return repository.getWithUser(id, userId);
     }
