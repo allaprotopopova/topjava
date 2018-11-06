@@ -6,7 +6,6 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,13 +13,13 @@ import java.util.List;
 public class DataJpaMealRepositoryImpl implements MealRepository {
 
     private final CrudMealRepository crudRepository;
+    private final CrudUserRepository crudUserRepository;
 
-    private final EntityManager em;
 
     @Autowired
-    public DataJpaMealRepositoryImpl(CrudMealRepository crudRepository, EntityManager em) {
+    public DataJpaMealRepositoryImpl(CrudMealRepository crudRepository, CrudUserRepository crudUserRepository) {
         this.crudRepository = crudRepository;
-        this.em = em;
+        this.crudUserRepository = crudUserRepository;
     }
 
     @Override
@@ -28,7 +27,7 @@ public class DataJpaMealRepositoryImpl implements MealRepository {
         if (!meal.isNew() && get(meal.getId(), userId) == null) {
             return null;
         }
-        meal.setUser(em.getReference(User.class, userId));
+        meal.setUser(crudUserRepository.getOne(userId));
         return crudRepository.save(meal);
     }
 
@@ -52,4 +51,16 @@ public class DataJpaMealRepositoryImpl implements MealRepository {
     public List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
         return crudRepository.getBetween(startDate, endDate, userId);
     }
+
+    @Override
+    public Meal getWithUser(int id, int userId) {
+        List<Meal> meals = crudRepository.getWithUser(id);
+        Meal meal = null;
+        if (!meals.isEmpty()) {
+            meal = meals.get(0);
+        }
+        return meal != null && meal.getUser().getId() == userId ? meal : null;
+    }
+
+
 }
