@@ -12,13 +12,10 @@ import java.util.List;
 @Repository
 @Profile(Profiles.POSTGRES_DB)
 public class JdbcMealReposytoryPostgresImpl extends JdbcMealRepositoryTemplate {
-    public JdbcMealReposytoryPostgresImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        super(jdbcTemplate, namedParameterJdbcTemplate);
-    }
 
     @Override
-    <T> T convertDateTime(LocalDateTime dateTime) {
-        return (T) dateTime;
+    LocalDateTime convertDateTime(LocalDateTime dateTime) {
+        return dateTime;
     }
 
 

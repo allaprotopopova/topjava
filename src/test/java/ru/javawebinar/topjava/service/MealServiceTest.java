@@ -15,9 +15,8 @@ import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
-@Ignore
 @ActiveProfiles(resolver = ActiveDbProfileResolver.class)
-public class MealServiceTest extends ServiceTest {
+public abstract class MealServiceTest extends ServiceTest {
 
     @Autowired
     protected MealService service;

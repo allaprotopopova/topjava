@@ -1,7 +1,6 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -18,9 +17,9 @@ import java.util.List;
 
 import static ru.javawebinar.topjava.UserTestData.*;
 
-@Ignore
+
 @ActiveProfiles(resolver = ActiveDbProfileResolver.class)
-public class UserServiceTest extends ServiceTest {
+public abstract class UserServiceTest extends ServiceTest {
 
     @Autowired
     protected UserService service;

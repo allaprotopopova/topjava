@@ -13,15 +13,11 @@ import java.util.List;
 @Repository
 @Profile(Profiles.HSQL_DB)
 public class JdbcMealReposytoryHsqlImpl extends JdbcMealRepositoryTemplate {
-    public JdbcMealReposytoryHsqlImpl(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        super(jdbcTemplate, namedParameterJdbcTemplate);
-    }
 
     @Override
-    <T> T convertDateTime(LocalDateTime dateTime) {
-        return (T) Timestamp.valueOf(dateTime);
+    Timestamp convertDateTime(LocalDateTime dateTime) {
+        return Timestamp.valueOf(dateTime);
     }
-
 
 
 }

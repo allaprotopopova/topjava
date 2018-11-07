@@ -23,8 +23,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 })
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
-@Ignore
-public class ServiceTest {
+public abstract class ServiceTest {
     private static final Logger log = getLogger("result");
 
     private static StringBuilder results = new StringBuilder();
@@ -48,7 +47,7 @@ public class ServiceTest {
 
     @BeforeClass
     public static void clearResults() {
-        results = new StringBuilder();
+        results.setLength(0);
     }
 
     @AfterClass

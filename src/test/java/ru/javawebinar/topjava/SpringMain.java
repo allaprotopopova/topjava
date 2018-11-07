@@ -16,9 +16,11 @@ import java.util.List;
 
 public class SpringMain {
     public static void main(String[] args) {
-        // java 7 Automatic resource management\
-        System.setProperty("spring.profiles.active", Profiles.DATAJPA+","+ Profiles.getActiveDbProfile());
-        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml")) {
+
+        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext()) {
+            appCtx.getEnvironment().setActiveProfiles(Profiles.DATAJPA, Profiles.getActiveDbProfile());
+            ((ClassPathXmlApplicationContext) appCtx).setConfigLocations("spring/spring-app.xml", "spring/spring-db.xml");
+            appCtx.refresh();
             System.out.println("Bean definition names: " + Arrays.toString(appCtx.getBeanDefinitionNames()));
             AdminRestController adminUserController = appCtx.getBean(AdminRestController.class);
             adminUserController.create(new User(null, "userName", "email@mail.ru", "password", Role.ROLE_ADMIN));
