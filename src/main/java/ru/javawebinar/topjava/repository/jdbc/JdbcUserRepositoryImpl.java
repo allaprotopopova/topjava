@@ -5,7 +5,7 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.RowMapperResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -18,7 +18,6 @@ import ru.javawebinar.topjava.repository.UserRepository;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,7 +25,7 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class JdbcUserRepositoryImpl implements UserRepository {
 
-    private static final RowMapper<User> ROW_MAPPER = new UserRowMapper();
+    private static final RowMapperResultSetExtractor<User> ROW_MAPPER = new UserRowmapper();
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -58,12 +57,13 @@ public class JdbcUserRepositoryImpl implements UserRepository {
                         "registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", parameterSource) == 0) {
             return null;
         }
-        jdbcTemplate.execute("delete from user_roles where user_id="+user.getId());
+        jdbcTemplate.execute("delete from user_roles where user_id=" + user.getId());
         jdbcTemplate.batchUpdate("Insert into user_roles(user_id, role) values (?, ?)", new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setInt(1, user.getId());
-                ps.setString(2, Role.values()[i].name());
+                ps.setString(2, new ArrayList<>(user.getRoles()).get(i).name());
+
             }
 
             @Override
@@ -94,33 +94,38 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 
     @Override
     public List<User> getAll() {
-        List<User> users =  jdbcTemplate.query("SELECT u.*, u_r.role FROM users u  LEFT JOIN user_roles u_r on u.id = u_r.user_id ORDER BY u.name, u.email", ROW_MAPPER);
-        Set<User> result = new HashSet<>();
-        users.forEach(u -> result.add(u));
-        return result.stream().sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail)).collect(Collectors.toList());
+        return jdbcTemplate.query("SELECT u.*, u_r.role FROM users u  LEFT JOIN user_roles u_r on u.id = u_r.user_id ORDER BY u.name, u.email", ROW_MAPPER);
     }
 
 }
 
-final class UserRowMapper implements RowMapper<User> {
-
+final class UserRowmapper extends RowMapperResultSetExtractor<User> {
     private Map<Integer, User> users = new HashMap<>();
 
+
+    UserRowmapper() {
+        super(new BeanPropertyRowMapper<>());
+    }
+
     @Override
-    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
-        int id = rs.getInt("id");
-        String name = rs.getString("name");
-        String email = rs.getString("email");
-        String password = rs.getString("password");
-        int caloriesPerDay = rs.getInt("calories_per_day");
-        boolean enabled = rs.getBoolean("enabled");
-        Date registered = rs.getDate("registered");
-        Role role = Role.valueOf(rs.getString("role"));
+    public List<User> extractData(ResultSet rs) throws SQLException {
+        users.clear();
+        while (rs.next()) {
+            int id = rs.getInt("id");
+            String name = rs.getString("name");
+            String email = rs.getString("email");
+            String password = rs.getString("password");
+            int caloriesPerDay = rs.getInt("calories_per_day");
+            boolean enabled = rs.getBoolean("enabled");
+            Date registered = rs.getDate("registered");
+            Role role = Role.valueOf(rs.getString("role"));
 
-        User user = users.computeIfAbsent(id, u -> new User(id, name, email, password, caloriesPerDay, enabled, registered, Collections.singleton(role)));
+            User user = users.computeIfAbsent(id, u -> new User(id, name, email, password, caloriesPerDay, enabled, registered, Collections.singleton(role)));
+            user.getRoles().add(role);
+        }
+        System.out.println(new ArrayList<>(users.values()));
 
-        user.getRoles().add(role);
-
-        return user;
+        return new ArrayList<>(users.values()).stream().sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail)).collect(Collectors.toList());
     }
 }
+

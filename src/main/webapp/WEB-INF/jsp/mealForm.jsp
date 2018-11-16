@@ -5,19 +5,14 @@
 
 <html>
 <head>
-    <base href="${pageContext.request.contextPath}/"/>
     <jsp:include page="fragments/headTag.jsp"/>
 </head>
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
-    <h2><c:choose>
-        <c:when test="${meal.id==null}">
-            <spring:message code="meal.createTitle"/>
-        </c:when>
-        <c:otherwise><spring:message code="meal.updateTitle"/></c:otherwise>
-    </c:choose></h2>
+    <h2><spring:message code="${meal.id==null? 'meal.createTitle' : 'meal.updateTitle'}"/>
+    </h2>
     <hr>
 
     <form method="post" action="meals">

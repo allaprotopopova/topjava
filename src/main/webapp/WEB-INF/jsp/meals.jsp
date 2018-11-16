@@ -5,7 +5,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
 <head>
-    <base href="${pageContext.request.contextPath}/"/>
     <jsp:include page="fragments/headTag.jsp"/>
 </head>
 <body>
