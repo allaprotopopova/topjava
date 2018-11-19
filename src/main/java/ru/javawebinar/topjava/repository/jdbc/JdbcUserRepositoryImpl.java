@@ -5,7 +5,7 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapperResultSetExtractor;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -19,13 +19,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 @Transactional(readOnly = true)
 public class JdbcUserRepositoryImpl implements UserRepository {
 
-    private static final RowMapperResultSetExtractor<User> ROW_MAPPER = new UserRowmapper();
+    private static final ResultSetExtractor<List<User>> ROW_MAPPER = new UserRowmapper();
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -57,12 +56,13 @@ public class JdbcUserRepositoryImpl implements UserRepository {
                         "registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", parameterSource) == 0) {
             return null;
         }
+        List<Role> roles = new ArrayList<>(user.getRoles());
         jdbcTemplate.execute("delete from user_roles where user_id=" + user.getId());
         jdbcTemplate.batchUpdate("Insert into user_roles(user_id, role) values (?, ?)", new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setInt(1, user.getId());
-                ps.setString(2, new ArrayList<>(user.getRoles()).get(i).name());
+                ps.setString(2, roles.get(i).name());
 
             }
 
@@ -99,33 +99,29 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 
 }
 
-final class UserRowmapper extends RowMapperResultSetExtractor<User> {
-    private Map<Integer, User> users = new HashMap<>();
+final class UserRowmapper implements ResultSetExtractor<List<User>> {
+    private Map<Integer, User> users = new LinkedHashMap<>();
+    private BeanPropertyRowMapper<User> mapper;
 
 
     UserRowmapper() {
-        super(new BeanPropertyRowMapper<>());
+        super();
+        mapper = new BeanPropertyRowMapper<>(User.class);
     }
 
     @Override
     public List<User> extractData(ResultSet rs) throws SQLException {
         users.clear();
         while (rs.next()) {
-            int id = rs.getInt("id");
-            String name = rs.getString("name");
-            String email = rs.getString("email");
-            String password = rs.getString("password");
-            int caloriesPerDay = rs.getInt("calories_per_day");
-            boolean enabled = rs.getBoolean("enabled");
-            Date registered = rs.getDate("registered");
+            User userExceptRoles = mapper.mapRow(rs, rs.getRow());
             Role role = Role.valueOf(rs.getString("role"));
+            userExceptRoles.setRoles(Collections.singleton(role));
 
-            User user = users.computeIfAbsent(id, u -> new User(id, name, email, password, caloriesPerDay, enabled, registered, Collections.singleton(role)));
+            User user = users.computeIfAbsent(userExceptRoles.getId(), u -> userExceptRoles);
             user.getRoles().add(role);
         }
-        System.out.println(new ArrayList<>(users.values()));
 
-        return new ArrayList<>(users.values()).stream().sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail)).collect(Collectors.toList());
+        return new ArrayList<>(new ArrayList<>(users.values()));
     }
 }
 
