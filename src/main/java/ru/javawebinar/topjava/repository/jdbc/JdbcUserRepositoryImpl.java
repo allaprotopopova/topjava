@@ -24,7 +24,7 @@ import java.util.*;
 @Transactional(readOnly = true)
 public class JdbcUserRepositoryImpl implements UserRepository {
 
-    private static final ResultSetExtractor<List<User>> ROW_MAPPER = new UserRowmapper();
+    private static final ResultSetExtractor<List<User>> RESULT_SET_EXTRACTOR = new UserRowmapper();
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -57,7 +57,9 @@ public class JdbcUserRepositoryImpl implements UserRepository {
             return null;
         }
         List<Role> roles = new ArrayList<>(user.getRoles());
-        jdbcTemplate.execute("delete from user_roles where user_id=" + user.getId());
+        if (!user.isNew()) {
+            jdbcTemplate.execute("delete from user_roles where user_id=" + user.getId());
+        }
         jdbcTemplate.batchUpdate("Insert into user_roles(user_id, role) values (?, ?)", new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -82,46 +84,43 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 
     @Override
     public User get(int id) {
-        List<User> users = jdbcTemplate.query("SELECT u.*, u_r.role FROM users u  LEFT JOIN user_roles u_r on u.id = u_r.user_id WHERE id=?", ROW_MAPPER, id);
+        List<User> users = jdbcTemplate.query("SELECT u.*, u_r.role FROM users u  LEFT JOIN user_roles u_r on u.id = u_r.user_id WHERE id=?", RESULT_SET_EXTRACTOR, id);
         return DataAccessUtils.singleResult(users);
     }
 
     @Override
     public User getByEmail(String email) {
-        List<User> users = jdbcTemplate.query("SELECT u.*, u_r.role FROM users u  LEFT JOIN user_roles u_r on u.id = u_r.user_id WHERE email=?", ROW_MAPPER, email);
+        List<User> users = jdbcTemplate.query("SELECT u.*, u_r.role FROM users u  LEFT JOIN user_roles u_r on u.id = u_r.user_id WHERE email=?", RESULT_SET_EXTRACTOR, email);
         return DataAccessUtils.singleResult(users);
     }
 
     @Override
     public List<User> getAll() {
-        return jdbcTemplate.query("SELECT u.*, u_r.role FROM users u  LEFT JOIN user_roles u_r on u.id = u_r.user_id ORDER BY u.name, u.email", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT u.*, u_r.role FROM users u  LEFT JOIN user_roles u_r on u.id = u_r.user_id ORDER BY u.name, u.email", RESULT_SET_EXTRACTOR);
     }
 
-}
-
-final class UserRowmapper implements ResultSetExtractor<List<User>> {
-    private Map<Integer, User> users = new LinkedHashMap<>();
-    private BeanPropertyRowMapper<User> mapper;
+    private static class UserRowmapper implements ResultSetExtractor<List<User>> {
+        private Map<Integer, User> users = new LinkedHashMap<>();
 
 
-    UserRowmapper() {
-        super();
-        mapper = new BeanPropertyRowMapper<>(User.class);
-    }
+        @Override
+        public List<User> extractData(ResultSet rs) throws SQLException {
+            users.clear();
+            BeanPropertyRowMapper<User> mapper = new BeanPropertyRowMapper<>(User.class);
+            while (rs.next()) {
+                User userExceptRoles = mapper.mapRow(rs, rs.getRow());
+                Role role = Role.valueOf(rs.getString("role"));
+                userExceptRoles.setRoles(Collections.singleton(role));
 
-    @Override
-    public List<User> extractData(ResultSet rs) throws SQLException {
-        users.clear();
-        while (rs.next()) {
-            User userExceptRoles = mapper.mapRow(rs, rs.getRow());
-            Role role = Role.valueOf(rs.getString("role"));
-            userExceptRoles.setRoles(Collections.singleton(role));
+                User user = users.computeIfAbsent(userExceptRoles.getId(), u -> userExceptRoles);
+                user.getRoles().add(role);
+            }
 
-            User user = users.computeIfAbsent(userExceptRoles.getId(), u -> userExceptRoles);
-            user.getRoles().add(role);
+            return new ArrayList<>(new ArrayList<>(users.values()));
         }
-
-        return new ArrayList<>(new ArrayList<>(users.values()));
     }
+
 }
+
+
 

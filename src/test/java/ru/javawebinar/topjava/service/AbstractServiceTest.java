@@ -24,7 +24,7 @@ import static ru.javawebinar.topjava.util.ValidationUtil.getRootCause;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
-        "classpath:spring/spring-db.xml"
+        "classpath:spring/spring-dbTest.xml"
 })
 @RunWith(SpringJUnit4ClassRunner.class)
 @ActiveProfiles(resolver = ActiveDbProfileResolver.class)
