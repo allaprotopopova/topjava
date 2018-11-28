@@ -1,13 +1,18 @@
 package ru.javawebinar.topjava.web.meal;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 import ru.javawebinar.topjava.MealTestData;
 import ru.javawebinar.topjava.TestUtil;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
+
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -15,14 +20,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.TestUtil.readFromJson;
+import static ru.javawebinar.topjava.UserTestData.USER;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 import static ru.javawebinar.topjava.web.meal.MealRestController.REST_URL;
 
 class MealRestControllerTest extends AbstractControllerTest {
 
+    @Autowired
+    MealService mealService;
+
     @Test
     void testGet() throws Exception {
-        mockMvc.perform(get(REST_URL +"/"+MEAL1.getId()))
+        mockMvc.perform(get(REST_URL + "/" + MEAL1.getId()))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -31,7 +40,7 @@ class MealRestControllerTest extends AbstractControllerTest {
 
     @Test
     void testDelete() throws Exception {
-        mockMvc.perform(delete(REST_URL +"/"+ MEAL1.getId()))
+        mockMvc.perform(delete(REST_URL + "/" + MEAL1.getId()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
         assertMatch(mealService.getAll(USER_ID), MEAL6, MEAL5, MEAL4, MEAL3, MEAL2);
@@ -43,8 +52,8 @@ class MealRestControllerTest extends AbstractControllerTest {
                 mockMvc.perform(get(REST_URL))
                         .andExpect(status().isOk())
                         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                        .andExpect(contentJson(MEAL1, MEAL2, MEAL3, MEAL4, MEAL5, MEAL6))
-        );
+                        .andExpect(contentJson(MealsUtil.getWithExcess(List.of(MEAL1, MEAL2, MEAL3, MEAL4, MEAL5, MEAL6), USER.getCaloriesPerDay()))
+                        ));
     }
 
     @Test
@@ -65,7 +74,7 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void update() throws Exception {
         Meal updated = new Meal(MEAL1);
-        mockMvc.perform(put(REST_URL +"/"+ MEAL1.getId())
+        mockMvc.perform(put(REST_URL + "/" + MEAL1.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(updated)))
                 .andExpect(status().isNoContent());
@@ -74,14 +83,15 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void getBetween() throws Exception {
+    void getBetweenDate() throws Exception {
         TestUtil.print(
-                mockMvc.perform(get(REST_URL+"/filter?"+"startDate=2015-05-30T10:15&startTime=&endTime=&endDate=2015-05-30T10:15"))
+                mockMvc.perform(get(REST_URL + "/filter?" + "startDate=2015-05-30&endDate=2015-05-30"))
                         .andDo(print())
                         .andExpect(status().isOk())
                         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                        .andExpect(contentJson(MEAL3, MEAL2, MEAL1))
+                        .andExpect(contentJson(MealsUtil.getWithExcess(List.of(MEAL3, MEAL2, MEAL1), USER.getCaloriesPerDay())))
         );
 
     }
+
 }

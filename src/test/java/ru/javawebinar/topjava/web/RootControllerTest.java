@@ -2,12 +2,15 @@ package ru.javawebinar.topjava.web;
 
 import org.assertj.core.matcher.AssertionMatcher;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.javawebinar.topjava.MealTestData;
+import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -17,6 +20,9 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 class RootControllerTest extends AbstractControllerTest {
+
+    @Autowired
+    private MealService mealService;
 
     @Test
     void testUsers() throws Exception {
@@ -45,8 +51,8 @@ class RootControllerTest extends AbstractControllerTest {
                 .andExpect(model().attribute("meals", new AssertionMatcher<List<MealTo>>() {
                     @Override
                     public void assertion(List<MealTo> actual) throws AssertionError {
-                        List<MealTo> expected = MealsUtil.getWithExcess(mealService.getAll(USER_ID), MealsUtil.DEFAULT_CALORIES_PER_DAY);
-                        MealTestData.assertMatch(actual, expected);
+                        List<MealTo> expected = MealsUtil.getWithExcess(mealService.getAll(USER_ID), USER.getCaloriesPerDay());
+                        assertThat(actual).usingFieldByFieldElementComparator().isEqualTo(expected);
                     }
 
                 }));
