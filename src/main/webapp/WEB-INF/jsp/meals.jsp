@@ -37,8 +37,12 @@
                                    value="${param.endTime}">
                         </div>
                     </div>
-                    <button class="btn btn-success" type="submit"><spring:message code="meal.filter"/></button>
                 </form>
+            </div>
+            <div class="card-footer text-right">
+                <button class="btn btn-light " onclick="cleanFilter()"><spring:message code="common.clean"/></button>
+                <button class="btn btn-success" onclick="filter()"><spring:message code="meal.filter"/></button>
+
             </div>
         </div>
         <br>

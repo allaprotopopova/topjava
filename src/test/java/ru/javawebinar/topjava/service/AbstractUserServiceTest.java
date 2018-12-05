@@ -88,4 +88,12 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         List<User> all = service.getAll();
         assertMatch(all, ADMIN, USER);
     }
+
+    @Test
+    void saveDisable() {
+        User userForUpdate = new User(USER);
+        userForUpdate.setEnabled(false);
+        service.saveEnabled(userForUpdate.getId(), userForUpdate.isEnabled());
+        assertMatch(service.get(USER_ID), userForUpdate);
+    }
 }

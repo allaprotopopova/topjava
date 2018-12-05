@@ -40,3 +40,21 @@ $(function () {
     });
     makeEditable();
 });
+
+function updateTable() {
+    $.get(ajaxUrl, function (data) {
+        datatableApi.clear().rows.add(data).draw();
+    });
+}
+
+function updateRow(obj) {
+    var enabled = $(obj).is(":checked");
+    $.ajax({
+        type: "PUT",
+        url: ajaxUrl + "id/" + obj.id + "/enabled/" + enabled
+
+    }).done(function () {
+        updateTable();
+        successNoty("Saved");
+    });
+}
