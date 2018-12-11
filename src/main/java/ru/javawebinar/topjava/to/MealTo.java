@@ -1,15 +1,24 @@
 package ru.javawebinar.topjava.to;
 
+import org.hibernate.validator.constraints.Range;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class MealTo extends BaseTo {
+public class MealTo extends BaseTo implements Serializable {
 
+    @NotNull
     private LocalDateTime dateTime;
 
+    @Size(min = 2, max = 120, message = "length must be between 2 and 120")
     private String description;
 
-    private int calories;
+    @Range(min = 10, max = 5000, message = "value must be between 10 and 5000")
+    @NotNull
+    private Integer calories;
 
     private boolean excess;
 
@@ -43,18 +52,17 @@ public class MealTo extends BaseTo {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MealTo that = (MealTo) o;
-        return calories == that.calories &&
-                excess == that.excess &&
-                Objects.equals(id, that.id) &&
-                Objects.equals(dateTime, that.dateTime) &&
-                Objects.equals(description, that.description);
+        if (!(o instanceof MealTo)) return false;
+        MealTo mealTo = (MealTo) o;
+        return excess == mealTo.excess &&
+                Objects.equals(dateTime, mealTo.dateTime) &&
+                Objects.equals(description, mealTo.description) &&
+                Objects.equals(calories, mealTo.calories);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, dateTime, description, calories, excess);
+        return Objects.hash(dateTime, description, calories, excess);
     }
 
     @Override
@@ -66,5 +74,17 @@ public class MealTo extends BaseTo {
                 ", calories=" + calories +
                 ", excess=" + excess +
                 '}';
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCalories(Integer calories) {
+        this.calories = calories;
     }
 }
