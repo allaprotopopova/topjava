@@ -42,6 +42,11 @@ function updateTableByData(data) {
 }
 
 function save() {
+
+    if (form.find("#datetime").val()) {
+        var oldVal = form.find("#datetime").val();
+        form.find("#datetime").val(oldVal.substring(0,10)+"T"+oldVal.substring(11,19));
+    }
     $.ajax({
         type: "POST",
         url: context.ajaxUrl,

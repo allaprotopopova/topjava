@@ -64,4 +64,16 @@ $(function () {
         updateTable: updateFilteredTable
     });
 
+    filter = $('#filter');
+    filter.find("[id$='Date']").datetimepicker({
+        timepicker:false,
+        format: 'Y-m-d'
+    });
+    filter.find("[id$='Time']").datetimepicker({
+        datepicker:false,
+        format: 'H:i'
+    });
+    form.find("#dateTime").datetimepicker({
+        format: 'Y-m-d H:i'
+    })
 });
