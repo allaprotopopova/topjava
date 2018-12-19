@@ -7,6 +7,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ValidationException;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
@@ -31,7 +33,18 @@ public class ExceptionInfoHandler {
     @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(NotFoundException.class)
     public ErrorInfo handleError(HttpServletRequest req, NotFoundException e) {
-        return logAndGetErrorInfo(req, e, false, DATA_NOT_FOUND);
+        return logAndGetErrorInfo(req, e, false, DATA_ERROR);
+    }
+    @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(ValidationException.class)
+    public ErrorInfo notValid(HttpServletRequest req, ValidationException e) {
+        return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
+    }
+    @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ErrorInfo notValid(HttpServletRequest req, MethodArgumentNotValidException e) {
+
+        return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
     }
 
     @ResponseStatus(value = HttpStatus.CONFLICT)  // 409

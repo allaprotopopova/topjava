@@ -1,11 +1,15 @@
 package ru.javawebinar.topjava.web;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.support.SessionStatus;
 import ru.javawebinar.topjava.to.UserTo;
@@ -16,6 +20,14 @@ import javax.validation.Valid;
 
 @Controller
 public class RootController extends AbstractUserController {
+
+    @Autowired
+    UserRegisterFormValidator userRegisterFormValidator;
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.setValidator(userRegisterFormValidator);
+    }
 
     @GetMapping("/")
     public String root() {
@@ -45,7 +57,7 @@ public class RootController extends AbstractUserController {
     }
 
     @PostMapping("/profile")
-    public String updateProfile(@Valid UserTo userTo, BindingResult result, SessionStatus status) {
+    public String updateProfile(@Validated UserTo userTo, BindingResult result, SessionStatus status) {
         if (result.hasErrors()) {
             return "profile";
         } else {

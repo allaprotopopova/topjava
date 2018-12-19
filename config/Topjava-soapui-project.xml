@@ -144,7 +144,7 @@
                 <con:parameters/>
                 <con:representation type="FAULT">
                     <con:mediaType>text/html;charset=utf-8</con:mediaType>
-                    <con:status>405 500</con:status>
+                    <con:status>405 500 401 403</con:status>
                     <con:params/>
                     <con:element>html</con:element>
                 </con:representation>
@@ -188,21 +188,20 @@
                     <con:params/>
                     <con:element>data</con:element>
                 </con:representation>
-                <con:request name="AdminUpdate" mediaType="application/json" postQueryString="false" id="efc6bc55-7b69-4992-974d-9a1c54d342ed">
+                <con:representation type="FAULT"><con:mediaType>application/json;charset=UTF-8</con:mediaType><con:status>500 422</con:status><con:params/><con:element xmlns:ns="http://localhost/topjava/rest/admin/users/100000">ns:Fault</con:element></con:representation><con:request name="AdminUpdate" mediaType="application/json" postQueryString="false" id="efc6bc55-7b69-4992-974d-9a1c54d342ed">
                     <con:settings>
-                        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/>
-                        </con:setting>
+                        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                     </con:settings>
                     <con:endpoint>http://localhost:8080</con:endpoint>
-                    <con:request>{"name": "UserUpdated",
- "email": "user@yandex.ru",
+                    <con:request>{"name": "",
+ "email": "",
  "password": "passwordNew",
  "roles": ["ROLE_USER"]
 }
                     </con:request>
                     <con:originalUri>http://localhost/topjava/rest/admin/users/100000</con:originalUri>
                     <con:credentials>
-                        <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+                        <con:username>admin@gmail.com</con:username><con:password>admin</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile>
                         <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
                         <con:authType>Global HTTP Settings</con:authType>
                     </con:credentials>
@@ -420,21 +419,20 @@
                     <con:params/>
                     <con:element xmlns:meal="http://localhost/topjava/rest/profile/meals">meal:Response</con:element>
                 </con:representation>
-                <con:request name="Create" id="17ccc2a1-4f1a-4715-afd3-e15984f11550" mediaType="application/json" postQueryString="false">
+                <con:representation type="FAULT"><con:mediaType>text/html;charset=utf-8</con:mediaType><con:status>401</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="FAULT"><con:mediaType>application/json;charset=UTF-8</con:mediaType><con:status>422 500</con:status><con:params/><con:element xmlns:meal="http://localhost/topjava/rest/profile/meals">meal:Fault</con:element></con:representation><con:request name="Create" id="17ccc2a1-4f1a-4715-afd3-e15984f11550" mediaType="application/json" postQueryString="false">
                     <con:settings>
-                        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/>
-                        </con:setting>
+                        <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                     </con:settings>
                     <con:endpoint>http://localhost:8080</con:endpoint>
                     <con:request>{
 "dateTime": "2015-06-01T10:00",
-"description": "Новый завтрак",
-"calories": 777
+"description": "New breakfast",
+"calories": 0
 }
                     </con:request>
                     <con:originalUri>http://localhost/topjava/rest/profile/meals</con:originalUri>
                     <con:credentials>
-                        <con:authType>No Authorization</con:authType>
+                        <con:username>user@yandex.ru</con:username><con:password>password</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType>
                     </con:credentials>
                     <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
                     <con:jmsPropertyConfig/>
@@ -442,7 +440,7 @@
                 </con:request>
             </con:method>
         </con:resource>
-        <con:resource name="meal" path="/topjava/rest/profile/meals/100002" id="ef18ccb6-f9f1-4062-937c-0410f64f79de">
+        <con:resource name="meal" path="topjava/rest/profile/meals/100002" id="ef18ccb6-f9f1-4062-937c-0410f64f79de">
             <con:settings/>
             <con:parameters/>
             <con:method name="" id="5291bca2-0bdc-408f-9104-cc6b4aee9e4b" method="GET">
@@ -489,7 +487,7 @@
                     <con:params/>
                     <con:element>data</con:element>
                 </con:representation>
-                <con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Update" id="71c9f471-ddc9-407a-a83a-9db525277859" mediaType="application/json" postQueryString="false">
+                <con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html;charset=utf-8</con:mediaType><con:status>401</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="REQUEST"><con:mediaType>application/x-www-form-urlencoded</con:mediaType><con:params/></con:representation><con:representation type="FAULT"><con:mediaType>text/html;charset=UTF-8</con:mediaType><con:status>500</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>204</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType>application/json;charset=UTF-8</con:mediaType><con:status>500 422</con:status><con:params/><con:element xmlns:ns="http://localhost/topjava/rest/profile/meals/100002">ns:Fault</con:element></con:representation><con:representation type="FAULT"><con:mediaType xsi:nil="true"/><con:status>404</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType xsi:nil="true"/><con:status>404</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType xsi:nil="true"/><con:status>404</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType xsi:nil="true"/><con:status>404</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType xsi:nil="true"/><con:status>404</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType xsi:nil="true"/><con:status>404</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType xsi:nil="true"/><con:status>404</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Update" id="71c9f471-ddc9-407a-a83a-9db525277859" mediaType="application/json" postQueryString="false">
                     <con:settings>
                         <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                     </con:settings>
@@ -499,12 +497,12 @@
 "id": 100002,
 "dateTime": "2015-05-30T10:00",
 "description": "Обновленный завтрак",
-"calories": 500
+"calories": 0
 }
                     </con:request>
                     <con:originalUri>http://localhost/topjava/rest/profile/meals/100002</con:originalUri>
                     <con:credentials>
-                        <con:authType>No Authorization</con:authType>
+                        <con:username>user@yandex.ru</con:username><con:password>password</con:password><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>No Authorization</con:authType>
                     </con:credentials>
                     <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
                     <con:jmsPropertyConfig/>
@@ -581,7 +579,12 @@
                 </con:request>
             </con:method>
         </con:resource>
-    </con:interface>
+    <con:resource name="mealsAjax" path="/topjava/ajax/profile/meals/100002" id="8a4a71b1-8c81-44d1-bce8-bb8a15fd903c"><con:settings/><con:parameters/><con:method name="Method 1" id="bd206507-39d9-4e54-b84b-755798208d4d" method="GET"><con:settings/><con:parameters/><con:representation type="REQUEST"><con:mediaType>application/json</con:mediaType><con:params/></con:representation><con:representation type="FAULT"><con:mediaType xsi:nil="true"/><con:status>404</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType xsi:nil="true"/><con:status>404</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType xsi:nil="true"/><con:status>404</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType xsi:nil="true"/><con:status>404</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType xsi:nil="true"/><con:status>404</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType xsi:nil="true"/><con:status>404</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html;charset=utf-8</con:mediaType><con:status>403</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html;charset=UTF-8</con:mediaType><con:status>500</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType>text/html;charset=UTF-8</con:mediaType><con:status>200</con:status><con:params/><con:element>html</con:element></con:representation><con:request name="Request 1" id="e99d03a6-9cf9-4b1b-9011-4f484f3f5f7f" mediaType="application/json" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://localhost:8080</con:endpoint><con:request>{
+"id": 100002,
+"dateTime": "",
+"description": "Обновленный завтрак",
+"calories": 100
+}</con:request><con:originalUri>http://localhost/ajax/profile/meals</con:originalUri><con:credentials><con:username>user@yandex.ru</con:username><con:password>password</con:password><con:domain/><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method></con:resource></con:interface>
     <con:properties/>
     <con:wssContainer/>
     <con:oAuth2ProfileContainer/>

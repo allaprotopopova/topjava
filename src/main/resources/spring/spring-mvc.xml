@@ -9,6 +9,8 @@
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
     <bean class="ru.javawebinar.topjava.web.json.JacksonObjectMapper" id="objectMapper" factory-method="getMapper"/>
+    <bean class="ru.javawebinar.topjava.web.UserRegisterFormValidator" id="registerFormValidator"/>
+
 
     <!-- serve static resources (*.html, ...) from src/main/webapp/ -->
     <mvc:default-servlet-handler/>
