@@ -7,6 +7,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -20,7 +22,6 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.ValidationException;
 
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
 
@@ -36,15 +37,15 @@ public class ExceptionInfoHandler {
         return logAndGetErrorInfo(req, e, false, DATA_ERROR);
     }
     @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
-    @ExceptionHandler(ValidationException.class)
-    public ErrorInfo notValid(HttpServletRequest req, ValidationException e) {
-        return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
+    @ExceptionHandler(BindException.class)
+    public ErrorInfo notValid(HttpServletRequest req, BindException e) {
+        return logAndGetErrorInfo(req, e.getBindingResult(), false, VALIDATION_ERROR);
     }
     @ResponseStatus(value = HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorInfo notValid(HttpServletRequest req, MethodArgumentNotValidException e) {
 
-        return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
+        return logAndGetErrorInfo(req, e.getBindingResult(), false, VALIDATION_ERROR);
     }
 
     @ResponseStatus(value = HttpStatus.CONFLICT)  // 409
@@ -75,4 +76,13 @@ public class ExceptionInfoHandler {
         }
         return new ErrorInfo(req.getRequestURL(), errorType, ValidationUtil.getMessage(rootCause));
     }
+    private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, BindingResult e, boolean logException, ErrorType errorType) {
+        if (logException) {
+            log.error(errorType + " at request " + req.getRequestURL(), e.getFieldErrors());
+        } else {
+            log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), e.getFieldErrors());
+        }
+        return new ErrorInfo(req.getRequestURL(), errorType, ValidationUtil.getErrorResponse(e));
+    }
+
 }

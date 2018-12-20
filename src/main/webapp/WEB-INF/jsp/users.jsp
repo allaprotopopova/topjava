@@ -44,13 +44,27 @@
             </div>
             <div class="modal-body">
                 <%--@elvariable id="userTo" type="ru.javawebinar.topjava.to.UserTo"--%>
-                <form:form id="detailsForm" class="form-group" modelAttribute="userTo" method="post">
-                    <input type="hidden" id="id" name="id">
+                    <form id="detailsForm">
+                        <input type="hidden" id="id" name="id">
 
-                    <topjava:inputField labelCode="user.name" name="name"/>
-                    <topjava:inputField labelCode="user.email" name="email"/>
-                    <topjava:inputField labelCode="user.password" name="password" inputType="password"/>
-                </form:form>
+                        <div class="form-group">
+                            <label for="name" class="col-form-label"><spring:message code="user.name"/></label>
+                            <input type="text" class="form-control" id="name" name="name"
+                                   placeholder="<spring:message code="user.name"/>">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="col-form-label"><spring:message code="user.email"/></label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                   placeholder="<spring:message code="user.email"/>">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password" class="col-form-label"><spring:message code="user.password"/></label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   placeholder="<spring:message code="user.password"/>">
+                        </div>
+                    </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">

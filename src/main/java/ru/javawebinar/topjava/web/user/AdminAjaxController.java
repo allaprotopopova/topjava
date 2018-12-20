@@ -3,8 +3,6 @@ package ru.javawebinar.topjava.web.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.User;
@@ -12,6 +10,7 @@ import ru.javawebinar.topjava.to.UserTo;
 import ru.javawebinar.topjava.util.UserUtil;
 import ru.javawebinar.topjava.web.UserRegisterFormValidator;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -46,10 +45,8 @@ public class AdminAjaxController extends AbstractUserController {
     }
 
     @PostMapping
-    public String createOrUpdate(@Validated UserTo userTo, BindingResult result) {
-        if (result.hasErrors()) {
-            return "/";
-        }
+    public String createOrUpdate(@Valid UserTo userTo) {
+
         if (userTo.isNew()) {
             super.create(UserUtil.createNewFromTo(userTo));
         } else {
